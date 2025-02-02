@@ -1,0 +1,25 @@
+﻿@using Elsa.Studio.Contracts
+@using Elsa.Studio.Enums
+@using Elsa.Studio.Models
+
+@foreach (var extension in ExtensionHandlers?.Where(p => p.Position == Position))
+{
+    @extension.DisplayExtension(EditorContext)
+}
+
+@code
+{
+    private List<IUIFieldExtensionHandler>? ExtensionHandlers;
+
+    [Parameter] public Type ParentComponent { get; set; } = default!; 
+    [Parameter] public DisplayInputEditorContext EditorContext { get; set; } = default!;
+    [Parameter] public FieldExtensionPosition Position { get; set; } = FieldExtensionPosition.Top;
+
+    [Inject] private IUIFieldExtensionService FieldExtensionService { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        ExtensionHandlers = FieldExtensionService.TryGetHandlers(ParentComponent.Name, EditorContext);
+    }
+}
